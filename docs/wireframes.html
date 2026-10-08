@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="te"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ACC Auction Website – Page Wireframes</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2230;--mut:#5d6677;--line:#aab3c2;--acc:#1f5eff;--ok:#1a9e55;--bad:#d93a3a;--fill:#e9edf4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141c;--card:#1a2030;--ink:#e8ecf4;--mut:#9aa5b8;--line:#4a5468;--acc:#6b95ff;--fill:#252d40}}
+:root[data-theme="dark"]{--bg:#10141c;--card:#1a2030;--ink:#e8ecf4;--mut:#9aa5b8;--line:#4a5468;--acc:#6b95ff;--fill:#252d40}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 14px 60px}
+h1{font-size:24px;margin:8px 0}h2{font-size:18px;margin:0 0 4px}
+p{margin:4px 0;color:var(--mut)}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 20px}
+nav a{padding:4px 10px;border:1px solid var(--line);border-radius:14px;color:var(--ink);text-decoration:none;font-size:13px}
+.scr{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:0 0 22px}
+.wf{border:2px dashed var(--line);border-radius:8px;padding:10px;margin:10px 0;background:var(--bg)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:8px}
+.g{display:grid;gap:8px}
+.b{border:1.5px solid var(--ink);border-radius:18px;padding:5px 12px;font-size:13px;background:var(--card);text-align:center}
+.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.bx{border:1.5px solid var(--line);background:var(--fill);border-radius:6px;padding:8px;font-size:13px;text-align:center}
+.circ{width:130px;height:130px;border:3px solid var(--ink);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:auto;font-weight:700}
+.in{border-bottom:1.5px solid var(--line);padding:3px 4px;font-size:13px;color:var(--mut)}
+.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:700}
+.note{font-size:13px;border-left:3px solid var(--acc);padding:2px 10px;margin:8px 0;color:var(--ink)}
+.grow{flex:1;min-width:140px}
+.t3{grid-template-columns:repeat(3,1fr)}.t4{grid-template-columns:repeat(4,1fr)}.t6{grid-template-columns:repeat(6,1fr)}
+@media (max-width:640px){.t6{grid-template-columns:repeat(2,1fr)}.t4{grid-template-columns:repeat(2,1fr)}.t3{grid-template-columns:1fr}}
+.tag{font-size:12px;color:var(--mut)}
+</style></head><body><main>
+<h1>ACC – Page Wireframes</h1>
+<p>Prathi page layout sketch. Dashed box = screen. Mobile lo anni columns stack avvutayi (kindha note chudu).</p>
+<nav><a href="#s1">Home</a><a href="#s2">Register</a><a href="#s3">Form</a><a href="#s4">Budget</a><a href="#s5">View Players</a><a href="#s6">View Team</a><a href="#s7">Watch Live</a><a href="#s8">Admin</a><a href="#s9">Assign Team</a><a href="#s10">Manage</a><a href="#s11">Auction</a><a href="#s12">Team Updates</a></nav>
+
+<section class="scr" id="s1"><h2>1. Home Page</h2><p>Route: /</p>
+<div class="wf"><div class="row" style="justify-content:space-between;border-bottom:1.5px solid var(--line);padding-bottom:8px">
+<div class="bx">College Logo<br>(replaceable)</div>
+<div class="row grow" style="justify-content:center"><span class="b">Player Register</span><span class="b">Budget Verifier</span><span class="b">View Players</span><span class="b">View Team</span><span class="b">Watch Live</span></div>
+<span class="b pri">Admin Login</span></div>
+<div class="bx" style="margin-top:10px;padding:50px 10px">Futuristic background<br><b>ACC – Avanthi Cricket Carnival</b><br>(ACC logo center)</div></div>
+<div class="note">Mobile: logo left + hamburger menu; 6 buttons menu lo (2-column grid). ACC logo center lo.</div>
+<div class="note">Links: Player Register→/register · Budget Verifier→/budget · View Players→/players · View Team→/teams · Watch Live→/live · Admin Login→popup</div></section>
+
+<section class="scr" id="s2"><h2>2. Player Register Page</h2><p>Route: /register</p>
+<div class="wf" style="text-align:center;padding:50px 10px">Cricket animated background (bat, ball, stumps floating)<br><br><span class="b pri" style="display:inline-block;padding:10px 24px;font-size:15px">Register Here</span><p>(floating button, click → form)</p></div></section>
+
+<section class="scr" id="s3"><h2>3. Register Form</h2><p>Register Here click chesaka (popup / same page)</p>
+<div class="wf"><div class="g" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+<div class="col"><div class="in">Roll Number *</div><div class="in">Mobile Number *</div><div class="in">Name *</div><div class="in">Photograph URL *</div>
+<div class="in">Course * ▾ (BTech, Diploma, MBA, MCA, MTech)</div><div class="in">Branch * ▾ (course ki tagattu)</div><div class="in">Year * ▾ (1st–4th)</div><div class="in">CricHeroes Profile URL (optional)</div><div class="in">Base Price * (10…250 allowed values)</div></div>
+<div class="col"><b>Skills</b>
+<div class="bx" style="text-align:left">◯ Batting → ☐ Strike Rotator ☐ Aggressive Batter ☐ Big Hitter</div>
+<div class="bx" style="text-align:left">◯ Bowling → ☐ Fast ☐ Spin</div>
+<div class="bx" style="text-align:left">◯ All-rounder</div>
+<div class="bx" style="text-align:left">☐ Wicket Keeper (any one tho kalipi select cheyochu)</div>
+<p class="tag">Ee moodu lo okati select chesthe migathavi disable.</p></div></div>
+<div style="text-align:center;margin-top:10px"><span class="b pri">Register</span></div></div>
+<div class="note">Submit → player save (status Not Paid) → Budget Verifier lo kanipistadu. Mobile: single column.</div></section>
+
+<section class="scr" id="s4"><h2>4. Budget Verifier</h2><p>Route: /budget · 3 levels</p>
+<div class="wf"><b>Level 1</b><div class="row" style="margin-top:6px"><span class="b">BTech Students</span><span class="b">Diploma Students</span><span class="b">MCA</span><span class="b">MBA</span><span class="b">MTech</span></div></div>
+<div class="wf"><b>Level 2</b> (BTech/Diploma)<div class="row" style="margin:6px 0"><span class="b">1st Yr</span><span class="b">2nd Yr</span><span class="b">3rd Yr</span><span class="b">4th Yr</span></div><div class="row"><span class="tag">Branch tabs:</span><span class="b">CSE</span><span class="b">CSM</span><span class="b">CSD</span><span class="b">ECE</span><span class="b">EEE</span><span class="b">MECH</span></div></div>
+<div class="wf"><b>Level 3 – Student list</b>
+<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>1. K. Mahesh – Roll No.</span><span class="row"><span class="b">Paid</span><span class="b">Not Paid</span><span>Status: <span class="ok">Paid</span></span></span></div>
+<div class="row" style="justify-content:space-between;padding:6px 0"><span>2. Name – Roll No.</span><span class="row"><span class="b">Paid</span><span class="b">Not Paid</span><span>Status: <span class="bad">Not Paid</span></span></span></div></div>
+<div class="note">Paid status unna players matrame auction loki. Mobile: buttons name kindha vastayi.</div></section>
+
+<section class="scr" id="s5"><h2>5. View Players</h2><p>Route: /players · Paid players only, A–Z</p>
+<div class="wf"><div class="g t3"><div class="bx">Photo<br><b>Name</b><br>BTech – 2nd Yr<br>Big Hitter</div><div class="bx">Photo<br><b>Name</b><br>Diploma – 1st<br>Spin, WK</div><div class="bx">Photo<br><b>Name</b><br>MBA – 1st<br>All-rounder</div></div><p class="tag" style="text-align:center">Total players: N</p></div>
+<div class="note">Read-only page. Mobile: 1 card per row.</div></section>
+
+<section class="scr" id="s6"><h2>6. View Team</h2><p>Route: /teams · 11 team cards</p>
+<div class="wf"><div class="g t3">
+<div class="bx" style="text-align:left"><b>Team 1 name</b><div class="row" style="margin:6px 0"><span class="bx">Capt photo</span><span>Captain name</span></div><div class="row" style="margin-bottom:6px"><span class="bx">Coord photo</span><span>Coordinator name</span></div><b>Team Players</b><br>BTech 1st – 1. name, 2. name<br>BTech 2nd – …<br>Diploma – …<br>MBA – name</div>
+<div class="bx">Team 2 …</div><div class="bx">Team 3 … (Team 11 varaku)</div></div></div>
+<div class="note">Data: team/captain/coordinator → Assign Team page; players → auction sold. Players ki course + year matrame (branch ledu).</div></section>
+
+<section class="scr" id="s7"><h2>7. Watch Live</h2><p>Route: /live · read-only</p>
+<div class="wf"><div class="row" style="align-items:flex-start"><div class="bx grow">Current player card<br>photo · skill · base price</div><div class="circ" style="margin:0">Timer<br>20s</div><div class="bx grow">Current price<br><b>Leading team</b><br>Sold / Unsold message</div></div><div class="bx" style="margin-top:8px">Recent bids / sold list</div></div>
+<div class="note">Buttons levu. Auction page state ni live ga chupistundi. Mobile: stacked.</div></section>
+
+<section class="scr" id="s8"><h2>8. Admin Login + Dashboard</h2>
+<div class="row" style="align-items:flex-start"><div class="wf grow"><b>Floating login form</b> (Home paina)<div class="col" style="margin-top:6px"><div class="in">Username</div><div class="in">Password</div><span class="b pri">Login</span></div><p class="tag">Credentials code lo secret.</p></div>
+<div class="wf grow"><b>Admin Dashboard</b><div class="col" style="margin-top:6px;align-items:center"><span class="b">Assign Team and Add Captain</span><span class="b">Start Auction</span><span class="b">Manage Players</span></div></div></div></section>
+
+<section class="scr" id="s9"><h2>9. Assign Team and Add Captain</h2><p>Route: /admin/teams</p>
+<div class="wf"><div class="g" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))"><div class="in">Team Name</div><div class="in">Captain Name</div><div class="in">Captain Photo URL</div><div class="in">Coordinator Name</div><div class="in">Coordinator Photo URL</div></div><div style="text-align:center;margin-top:8px"><span class="b pri">Add</span></div></div>
+<div class="note">Add → team card create (max 11) → View Team + Auction team buttons lo kanipistundi. Purse 1000 and 0/15 start avthayi.</div></section>
+
+<section class="scr" id="s10"><h2>10. Manage Players</h2><p>Route: /admin/players · Paid players, A–Z</p>
+<div class="wf"><div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>1. K. Mahesh – BTech 2nd</span><span class="row"><span class="tag">Base: 40</span><span class="b">Edit Base Price</span><span class="b" style="border-color:var(--bad);color:var(--bad)">Remove</span></span></div>
+<div class="row" style="justify-content:space-between;padding:6px 0"><span>2. Name – Course Yr</span><span class="row"><span class="tag">Base: 20</span><span class="b">Edit Base Price</span><span class="b" style="border-color:var(--bad);color:var(--bad)">Remove</span></span></div></div>
+<div class="note">Remove → confirm → website nundi permanent delete. Edit Base Price → input + OK → update, auction lo kotha price.</div></section>
+
+<section class="scr" id="s11"><h2>11. Start Auction (Main)</h2><p>Route: /admin/auction · big screen kosam</p>
+<div class="wf"><div class="row" style="justify-content:flex-end"><span class="b pri">Team Updates</span></div>
+<div class="g" style="grid-template-columns:1fr 1.2fr 1fr;align-items:start;margin-top:6px">
+<div class="col"><div class="bx"><b>Select Player ▾</b><br>BTech 1st/2nd/3rd/4th<br>Diploma · MCA · MBA · MTech</div><span class="b">Next Player</span><span class="b">Pass</span></div>
+<div class="col"><div class="bx" style="padding:14px">Player Profile<br>Photo · Skill<br>(Big Hitter / Fast / WK …)</div><div class="circ">20 sec<br><span class="b pri" style="font-weight:400;margin-top:4px">Start</span></div><div class="bx"><b>Price: 40</b> (base → current)<br><span class="tag">Leading: Team name</span></div></div>
+<div class="col"><b>Teams</b><div class="g" style="grid-template-columns:repeat(3,1fr)"><span class="bx">T1</span><span class="bx">T2</span><span class="bx">T3</span><span class="bx">T4</span><span class="bx">T5</span><span class="bx">T6</span><span class="bx">T7</span><span class="bx">T8</span><span class="bx">T9</span><span class="bx">T10</span><span class="bx">T11</span></div></div></div></div>
+<div class="note"><b>Flow:</b> Year select → random player → Start → 20s timer → team button click: price +10/20/30, timer reset 20s → timer 0: last bidder ki SOLD → Start malli visible → Next Player / Pass.</div>
+<div class="note"><b>Increment:</b> &lt;100 : +10 · 100–199 : +20 · 200+ : +30. Team rules datite warning + bid block (purse 1000, 15 players, min 2 per BTech yr + Diploma). Year lo players ayipothe “No players left”.</div>
+<div class="note">Mobile: Profile → Timer → Teams grid → Select/Next/Pass vertical order lo.</div></section>
+
+<section class="scr" id="s12"><h2>12. Team Updates (popup)</h2><p>Auction page top-right button</p>
+<div class="wf"><div class="g t4"><div class="bx" style="text-align:left"><b>Team 1</b><br>BTech 1st <span class="ok">✔</span><br>BTech 2nd <span class="ok">✔</span><br>BTech 3rd <span class="bad">✖</span><br>BTech 4th <span class="bad">✖</span><br>Diploma <span class="ok">✔</span><br>Others 1<br><span class="tag">Purse 640 · 6/15</span></div><div class="bx">Team 2</div><div class="bx">Team 3</div><div class="bx">… Team 11</div></div></div>
+<div class="note">Green = 2 players konesindi, Red = inka kala. Prathi team ki separate card.</div></section>
+</main></body></html>

@@ -1,0 +1,14 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Node modules (if frontend uses Node)
+node_modules/
+
+# OS / editor junk
+.DS_Store
+.vscode/
+.idea/

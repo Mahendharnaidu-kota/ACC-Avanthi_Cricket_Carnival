@@ -8,6 +8,7 @@ import { AdminDashboard } from './pages/AdminDashboard'
 import { BudgetVerifierLogin } from './pages/BudgetVerifierLogin'
 import { BudgetPage } from './pages/BudgetPage'
 import { HomePage } from './pages/HomePage'
+import { PlayersPage } from './pages/PlayersPage'
 import { RegisterPage } from './pages/RegisterPage'
 
 function PagePlaceholder({ title }: { title: string }) {
@@ -51,7 +52,7 @@ const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
       { path: '/register', element: <RegisterPage /> },
       { path: '/budget', element: <ProtectedRoute allowedRoles={['admin', 'verifier']} unauthenticatedFallback={<BudgetVerifierLogin />}><BudgetPage /></ProtectedRoute> },
-      { path: '/players', element: <PagePlaceholder title="View Players" /> },
+      { path: '/players', element: <PlayersPage /> },
       { path: '/teams', element: <PagePlaceholder title="View Team" /> },
       { path: '/live', element: <PagePlaceholder title="Watch Live" /> },
       { path: '/admin', element: <ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute> },

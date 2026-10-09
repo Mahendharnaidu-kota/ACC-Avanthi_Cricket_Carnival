@@ -12,6 +12,7 @@ import { AdminPlayersPage } from './pages/AdminPlayersPage'
 import { HomePage } from './pages/HomePage'
 import { PlayersPage } from './pages/PlayersPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { TeamsPage } from './pages/TeamsPage'
 
 function PagePlaceholder({ title }: { title: string }) {
   return (
@@ -55,7 +56,7 @@ const router = createBrowserRouter([
       { path: '/register', element: <RegisterPage /> },
       { path: '/budget', element: <ProtectedRoute allowedRoles={['admin', 'verifier']} unauthenticatedFallback={<BudgetVerifierLogin />}><BudgetPage /></ProtectedRoute> },
       { path: '/players', element: <PlayersPage /> },
-      { path: '/teams', element: <PagePlaceholder title="View Team" /> },
+      { path: '/teams', element: <TeamsPage /> },
       { path: '/live', element: <PagePlaceholder title="Watch Live" /> },
       { path: '/admin', element: <ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute> },
       { path: '/admin/teams', element: <ProtectedRoute allowedRoles={['admin']}><AdminTeamsPage /></ProtectedRoute> },

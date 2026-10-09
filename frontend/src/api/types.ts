@@ -126,6 +126,22 @@ export interface BidRequest {
   team_id: number
 }
 
+export type AuctionRosterCategory = 'BTech 1st' | 'BTech 2nd' | 'BTech 3rd' | 'BTech 4th' | 'Diploma' | 'Others'
+
+export interface AuctionCategoryStatus {
+  count: number
+  requirement_met: boolean
+}
+
+export interface AuctionTeamSummary {
+  id: number
+  name: string
+  purse_remaining: number
+  total_players: number
+  max_players: number
+  categories: Record<AuctionRosterCategory, AuctionCategoryStatus>
+}
+
 export interface PlayerFilters {
   payment_status?: PaymentStatus
   course?: Course

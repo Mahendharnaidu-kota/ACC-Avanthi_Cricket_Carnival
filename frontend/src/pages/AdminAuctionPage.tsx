@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { auctionApi, teamsApi } from '../api/client'
-import type { AuctionCategory, AuctionCurrentPlayer, Team } from '../api/types'
+import type { AuctionCategory, AuctionCurrentPlayer, AuctionPublicState, AuctionRosterCategory, AuctionTeamSummary, Team } from '../api/types'
 import { useAuctionState } from '../hooks/useAuctionState'
 
 const categories: { label: string; value: AuctionCategory }[] = [
@@ -50,15 +50,95 @@ function PlayerPortrait({ player }: { player: AuctionCurrentPlayer }) {
   return <img src={player.photo_url} alt={player.name} onError={() => setFailed(true)} className="h-28 w-28 shrink-0 rounded-2xl border border-white/10 bg-slate-900 object-cover shadow-lg sm:h-36 sm:w-36" />
 }
 
-function TeamUpdatesModal({ onClose }: { onClose: () => void }) {
+const rosterCategories: { key: AuctionRosterCategory; label: string }[] = [
+  { key: 'BTech 1st', label: 'BTech 1st' },
+  { key: 'BTech 2nd', label: 'BTech 2nd' },
+  { key: 'BTech 3rd', label: 'BTech 3rd' },
+  { key: 'BTech 4th', label: 'BTech 4th' },
+  { key: 'Diploma', label: 'Diploma' },
+  { key: 'Others', label: 'Others' },
+]
+
+function TeamUpdatesModal({ onClose, auctionState }: { onClose: () => void; auctionState: AuctionPublicState | null }) {
+  const [teams, setTeams] = useState<AuctionTeamSummary[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [retry, setRetry] = useState(0)
+
+  const stateRevision = auctionState ? [
+    auctionState.current_player?.id,
+    auctionState.current_price,
+    auctionState.leading_team?.id,
+    auctionState.status,
+    auctionState.selected_category,
+    auctionState.message,
+    auctionState.timer_ends_at,
+  ].join('|') : 'initial'
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    setError('')
+    auctionApi.teams()
+      .then((result) => { if (active) setTeams(result.slice(0, 11)) })
+      .catch((reason: unknown) => { if (active) setError(getErrorMessage(reason)) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [stateRevision, retry])
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
-      <section role="dialog" aria-modal="true" aria-labelledby="team-updates-title" className="w-full max-w-lg rounded-3xl border border-cyan-200/20 bg-[#08151f] p-6 shadow-[0_0_80px_rgba(34,211,238,.14)] sm:p-8">
-        <div className="flex items-start justify-between gap-4">
-          <div><p className="text-xs font-bold uppercase tracking-[.22em] text-cyan-300">Auction control</p><h2 id="team-updates-title" className="mt-2 text-3xl font-black text-white">Team Updates</h2></div>
-          <button type="button" onClick={onClose} aria-label="Close Team Updates" className="rounded-lg border border-white/15 px-3 py-1.5 text-xl text-slate-300 transition hover:bg-white/[.08]">×</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 backdrop-blur-md sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
+      <section role="dialog" aria-modal="true" aria-labelledby="team-updates-title" className="flex max-h-[94svh] w-full max-w-[1500px] flex-col overflow-hidden rounded-3xl border border-cyan-200/20 bg-[#08151f] shadow-[0_0_80px_rgba(34,211,238,.14)]">
+        <header className="flex items-center justify-between gap-4 border-b border-white/10 px-5 py-5 sm:px-8 sm:py-6">
+          <div><p className="text-xs font-bold uppercase tracking-[.22em] text-cyan-300">Auction control</p><h2 id="team-updates-title" className="mt-1 text-2xl font-black text-white sm:text-3xl">Team Updates</h2></div>
+          <button type="button" onClick={onClose} aria-label="Close Team Updates" className="rounded-xl border border-white/15 px-3 py-1.5 text-2xl leading-none text-slate-300 transition hover:border-cyan-200/30 hover:bg-white/[.08]">×</button>
+        </header>
+
+        <div className="overflow-y-auto p-4 sm:p-7">
+          {loading && <div className="rounded-2xl border border-white/10 bg-white/[.025] px-5 py-14 text-center text-slate-300" role="status">Loading team updates…</div>}
+          {!loading && error && <div className="rounded-2xl border border-rose-300/20 bg-rose-400/[.06] px-5 py-10 text-center" role="alert"><p className="font-semibold text-rose-100">{error}</p><button type="button" onClick={() => setRetry((value) => value + 1)} className="mt-4 rounded-xl border border-rose-200/25 px-4 py-2.5 text-sm font-bold text-rose-100 transition hover:bg-rose-300/10">Try again</button></div>}
+          {!loading && !error && teams.length === 0 && <div className="rounded-2xl border border-dashed border-white/15 bg-white/[.02] px-5 py-12 text-center text-slate-400">No teams added yet.</div>}
+          {!loading && !error && teams.length > 0 && (
+            <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-5">
+              {teams.map((team) => (
+                <article key={team.id} className="rounded-2xl border border-white/10 bg-slate-950/65 p-4 shadow-[0_18px_45px_rgba(0,0,0,.25)] sm:p-5">
+                  <header className="mb-4 flex items-start justify-between gap-3 border-b border-white/10 pb-4">
+                    <h3 className="break-words text-xl font-black leading-tight text-white sm:text-2xl">{team.name}</h3>
+                    <span className="shrink-0 rounded-lg border border-cyan-200/20 bg-cyan-300/[.06] px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider text-cyan-100">Team {String(team.id).padStart(2, '0')}</span>
+                  </header>
+                  <div className="mb-4 grid grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-amber-200/15 bg-amber-300/[.045] px-3 py-3">
+                      <p className="text-[9px] font-black uppercase tracking-[.14em] text-amber-100/70">Purse Remaining</p>
+                      <p className="mt-1 text-xl font-black tabular-nums text-amber-100 sm:text-2xl">{team.purse_remaining}<span className="ml-1 text-sm font-bold text-amber-100/60">/ 1000</span></p>
+                    </div>
+                    <div className="rounded-xl border border-cyan-200/15 bg-cyan-300/[.045] px-3 py-3">
+                      <p className="text-[9px] font-black uppercase tracking-[.14em] text-cyan-100/70">Players</p>
+                      <p className="mt-1 text-xl font-black tabular-nums text-cyan-100 sm:text-2xl">{team.total_players}<span className="ml-1 text-sm font-bold text-cyan-100/60">/ {team.max_players}</span></p>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    {rosterCategories.map(({ key, label }) => {
+                      const category = team.categories[key]
+                      const required = key !== 'Others'
+                      const met = category?.requirement_met ?? false
+                      return <div key={key} className="flex min-h-10 items-center justify-between gap-3 rounded-lg border border-white/[.06] bg-white/[.025] px-3 py-2">
+                        <span className="text-sm font-semibold text-slate-200 sm:text-base">{label}</span>
+                        <span className="flex items-center gap-2 text-sm font-black tabular-nums text-white sm:text-base">
+                          {category?.count ?? 0}
+                          {required && <span aria-label={met ? 'Requirement met' : 'Requirement not met'} className={`text-lg leading-none ${met ? 'text-emerald-300' : 'text-rose-300'}`}>{met ? '✓' : '✕'}</span>}
+                        </span>
+                      </div>
+                    })}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="mt-6 min-h-32 rounded-2xl border border-dashed border-white/15 bg-white/[.02]" />
+
+        <footer className="flex justify-end border-t border-white/10 px-5 py-4 sm:px-8">
+          <button type="button" onClick={onClose} className="rounded-xl bg-cyan-300 px-6 py-2.5 text-sm font-extrabold text-slate-950 transition hover:bg-cyan-200">Close</button>
+        </footer>
       </section>
     </div>
   )
@@ -230,7 +310,7 @@ export function AdminAuctionPage() {
         )}
       </div>
 
-      {teamUpdatesOpen && <TeamUpdatesModal onClose={() => setTeamUpdatesOpen(false)} />}
+      {teamUpdatesOpen && <TeamUpdatesModal onClose={() => setTeamUpdatesOpen(false)} auctionState={state} />}
     </main>
   )
 }

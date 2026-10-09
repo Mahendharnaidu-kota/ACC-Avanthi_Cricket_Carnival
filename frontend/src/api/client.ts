@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { AuctionCategory, AuctionPublicState, BasePrice, BasePriceUpdate, BidRequest, LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, Team, TeamCreate, TeamUpdate, UserRole } from './types'
+import type { AuctionCategory, AuctionPublicState, AuctionTeamSummary, BasePrice, BasePriceUpdate, BidRequest, LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, Team, TeamCreate, TeamUpdate, UserRole } from './types'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api'
 
@@ -51,6 +51,10 @@ export function getAuctionWebSocketUrl(): string {
 }
 
 export const auctionApi = {
+  teams: async (): Promise<AuctionTeamSummary[]> => {
+    const response = await apiClient.get<AuctionTeamSummary[]>('/auction/teams')
+    return response.data
+  },
   state: async (): Promise<AuctionPublicState> => {
     const response = await apiClient.get<AuctionPublicState>('/auction/state')
     return response.data

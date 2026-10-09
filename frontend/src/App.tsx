@@ -3,6 +3,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
 import { AdminLoginModal } from './components/AdminLoginModal'
 import { Navbar } from './components/Navbar'
 import { HomePage } from './pages/HomePage'
+import { RegisterPage } from './pages/RegisterPage'
 
 function PagePlaceholder({ title }: { title: string }) {
   return (
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { path: '/', element: <HomePage /> },
-      { path: '/register', element: <PagePlaceholder title="Player Register" /> },
+      { path: '/register', element: <RegisterPage /> },
       { path: '/budget', element: <PagePlaceholder title="Budget Verifier" /> },
       { path: '/players', element: <PagePlaceholder title="View Players" /> },
       { path: '/teams', element: <PagePlaceholder title="View Team" /> },

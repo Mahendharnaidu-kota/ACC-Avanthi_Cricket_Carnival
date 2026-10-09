@@ -35,3 +35,20 @@ button { cursor: pointer; }
 .pitch-markings {
   background: radial-gradient(ellipse at center, transparent 0 27%, rgba(148, 244, 255, .3) 27.2% 27.6%, transparent 27.8%), linear-gradient(90deg, transparent 49.8%, rgba(148, 244, 255, .22) 50%, transparent 50.2%);
 }
+
+@keyframes cricket-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-8deg); }
+  50% { transform: translate3d(0, -18px, 0) rotate(5deg); }
+}
+
+@keyframes cricket-spin {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+}
+
+.cricket-drift { animation: cricket-drift 7s ease-in-out infinite; }
+.cricket-spin { animation: cricket-spin 9s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

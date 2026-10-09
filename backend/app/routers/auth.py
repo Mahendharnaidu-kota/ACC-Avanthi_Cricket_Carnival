@@ -1,15 +1,18 @@
 from datetime import UTC, datetime, timedelta
 from hmac import compare_digest
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from jose import jwt
 
 from app.auth_config import get_jwt_secret, get_login_credentials
 from app.dependencies import JWT_ALGORITHM, UserRole
+from app.rate_limit import RateLimit
 from app.schemas.auth import LoginRequest, LoginResponse
 
 router = APIRouter(tags=["authentication"])
 TOKEN_LIFETIME = timedelta(hours=1)
+admin_login_rate_limit = RateLimit(max_requests=60, window_seconds=60)
+verifier_login_rate_limit = RateLimit(max_requests=60, window_seconds=60)
 
 
 def _login(payload: LoginRequest, role: UserRole) -> LoginResponse:
@@ -29,11 +32,19 @@ def _login(payload: LoginRequest, role: UserRole) -> LoginResponse:
     return LoginResponse(access_token=token, role=role, expires_at=expires_at)
 
 
-@router.post("/admin/login", response_model=LoginResponse)
+@router.post(
+    "/admin/login",
+    response_model=LoginResponse,
+    dependencies=[Depends(admin_login_rate_limit)],
+)
 def admin_login(payload: LoginRequest) -> LoginResponse:
     return _login(payload, "admin")
 
 
-@router.post("/verifier/login", response_model=LoginResponse)
+@router.post(
+    "/verifier/login",
+    response_model=LoginResponse,
+    dependencies=[Depends(verifier_login_rate_limit)],
+)
 def verifier_login(payload: LoginRequest) -> LoginResponse:
     return _login(payload, "verifier")

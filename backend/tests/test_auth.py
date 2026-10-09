@@ -127,6 +127,7 @@ def test_verifier_can_update_payment_and_authenticated_list_includes_all_players
         "batting_style": "aggressive batter",
     }
     paid_player = client.post("/api/players", json=payload).json()
+    assert "mobile" not in paid_player
     payload.update(roll_number="AUTH-UNPAID-02", name="Unpaid Test Player", mobile="9123456781")
     unpaid_player = client.post("/api/players", json=payload).json()
     verifier_token = login(client, "verifier")

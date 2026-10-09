@@ -11,13 +11,20 @@ from app.dependencies import (
     get_optional_current_principal,
 )
 from app.models import Player
+from app.rate_limit import RateLimit
 from app.schemas.enums import Course, PaymentStatus
 from app.schemas.player import BasePriceUpdate, PaymentUpdate, PlayerCreate, PlayerRead, PublicPlayerRead
 
 router = APIRouter(prefix="/players", tags=["players"])
+player_registration_rate_limit = RateLimit(max_requests=60, window_seconds=60)
 
 
-@router.post("", response_model=PlayerRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=PublicPlayerRead,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(player_registration_rate_limit)],
+)
 def register_player(payload: PlayerCreate, db: Session = Depends(get_db)) -> Player:
     player = Player(**payload.model_dump(mode="json"))
     db.add(player)

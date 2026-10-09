@@ -5,8 +5,13 @@ __pycache__/
 # Virtual environment
 .venv/
 
+# Local configuration files (keep checked-in examples)
+.env
+!.env.example
+
 # Node modules (if frontend uses Node)
 node_modules/
+dist/
 
 # OS / editor junk
 .DS_Store

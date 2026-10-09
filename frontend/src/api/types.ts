@@ -91,6 +91,41 @@ export interface AuctionState {
   updated_at: string
 }
 
+export type AuctionCategory = 'BTech 1st' | 'BTech 2nd' | 'BTech 3rd' | 'BTech 4th' | 'Diploma' | 'MCA' | 'MBA' | 'MTech'
+
+export interface AuctionCurrentPlayer {
+  id: number
+  name: string
+  photo_url: string
+  skill_type: SkillType
+  batting_style: Player['batting_style']
+  bowling_style: Player['bowling_style']
+  is_wicket_keeper: boolean
+  course: Course
+  year: number
+  base_price: number
+}
+
+export interface AuctionLeadingTeam {
+  id: number
+  name: string
+}
+
+export interface AuctionPublicState {
+  current_player: AuctionCurrentPlayer | null
+  current_price: number
+  leading_team: AuctionLeadingTeam | null
+  seconds_remaining: number | null
+  status: AuctionStatus
+  selected_category: string | null
+  message: string | null
+  timer_ends_at: string | null
+}
+
+export interface BidRequest {
+  team_id: number
+}
+
 export interface PlayerFilters {
   payment_status?: PaymentStatus
   course?: Course

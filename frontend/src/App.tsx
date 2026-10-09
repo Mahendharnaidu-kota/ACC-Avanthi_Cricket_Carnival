@@ -9,6 +9,7 @@ import { BudgetVerifierLogin } from './pages/BudgetVerifierLogin'
 import { BudgetPage } from './pages/BudgetPage'
 import { AdminTeamsPage } from './pages/AdminTeamsPage'
 import { AdminPlayersPage } from './pages/AdminPlayersPage'
+import { AdminAuctionPage } from './pages/AdminAuctionPage'
 import { HomePage } from './pages/HomePage'
 import { PlayersPage } from './pages/PlayersPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -61,7 +62,7 @@ const router = createBrowserRouter([
       { path: '/admin', element: <ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute> },
       { path: '/admin/teams', element: <ProtectedRoute allowedRoles={['admin']}><AdminTeamsPage /></ProtectedRoute> },
       { path: '/admin/players', element: <ProtectedRoute allowedRoles={['admin']}><AdminPlayersPage /></ProtectedRoute> },
-      { path: '/admin/auction', element: <ProtectedRoute allowedRoles={['admin']}><PagePlaceholder title="Start Auction" /></ProtectedRoute> },
+      { path: '/admin/auction', element: <ProtectedRoute allowedRoles={['admin']}><AdminAuctionPage /></ProtectedRoute> },
       { path: '*', element: <PagePlaceholder title="Page not found" /> },
     ],
   },

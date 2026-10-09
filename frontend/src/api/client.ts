@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { BasePrice, BasePriceUpdate, LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, Team, TeamCreate, TeamUpdate, UserRole } from './types'
+import type { AuctionCategory, AuctionPublicState, BasePrice, BasePriceUpdate, BidRequest, LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, Team, TeamCreate, TeamUpdate, UserRole } from './types'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api'
 
@@ -39,6 +39,42 @@ export const authApi = {
   },
   login: async (role: UserRole, credentials: LoginCredentials): Promise<LoginResponse> => {
     return role === 'admin' ? authApi.loginAdmin(credentials) : authApi.loginVerifier(credentials)
+  },
+}
+
+export function getAuctionWebSocketUrl(): string {
+  const apiUrl = new URL(apiBaseUrl, window.location.origin)
+  const apiRootPath = apiUrl.pathname.replace(/\/api\/?$/, '').replace(/\/$/, '')
+  const websocketUrl = new URL(`${apiRootPath}/ws/auction`, apiUrl.origin)
+  websocketUrl.protocol = websocketUrl.protocol === 'https:' ? 'wss:' : 'ws:'
+  return websocketUrl.toString()
+}
+
+export const auctionApi = {
+  state: async (): Promise<AuctionPublicState> => {
+    const response = await apiClient.get<AuctionPublicState>('/auction/state')
+    return response.data
+  },
+  selectCategory: async (category: AuctionCategory): Promise<AuctionPublicState> => {
+    const response = await apiClient.post<AuctionPublicState>('/auction/select-category', { category })
+    return response.data
+  },
+  start: async (): Promise<AuctionPublicState> => {
+    const response = await apiClient.post<AuctionPublicState>('/auction/start')
+    return response.data
+  },
+  bid: async (teamId: number): Promise<AuctionPublicState> => {
+    const payload: BidRequest = { team_id: teamId }
+    const response = await apiClient.post<AuctionPublicState>('/auction/bid', payload)
+    return response.data
+  },
+  next: async (): Promise<AuctionPublicState> => {
+    const response = await apiClient.post<AuctionPublicState>('/auction/next')
+    return response.data
+  },
+  pass: async (): Promise<AuctionPublicState> => {
+    const response = await apiClient.post<AuctionPublicState>('/auction/pass')
+    return response.data
   },
 }
 

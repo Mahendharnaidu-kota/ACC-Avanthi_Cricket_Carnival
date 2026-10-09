@@ -65,6 +65,8 @@ export interface TeamCreate {
   coordinator_photo_url: string
 }
 
+export type TeamUpdate = TeamCreate
+
 export interface Team {
   id: number
   name: string

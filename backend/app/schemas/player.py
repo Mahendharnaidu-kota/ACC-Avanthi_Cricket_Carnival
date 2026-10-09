@@ -93,6 +93,29 @@ class PlayerRead(BaseModel):
     created_at: datetime
 
 
+class PublicPlayerRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    roll_number: str
+    name: str
+    photo_url: str
+    course: str
+    branch: str
+    year: int
+    cricheroes_url: str | None
+    base_price: int
+    skill_type: str
+    batting_style: str | None
+    bowling_style: str | None
+    is_wicket_keeper: bool
+    payment_status: PaymentStatus
+    auction_status: AuctionStatus
+    sold_to_team_id: int | None
+    sold_price: int | None
+    created_at: datetime
+
+
 class PaymentUpdate(BaseModel):
     payment_status: PaymentStatus
 

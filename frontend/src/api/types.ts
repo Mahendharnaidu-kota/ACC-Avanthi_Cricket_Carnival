@@ -3,6 +3,19 @@ export type SkillType = 'batting' | 'bowling' | 'allrounder'
 export type PaymentStatus = 'paid' | 'not_paid'
 export type PlayerAuctionStatus = 'available' | 'sold' | 'passed' | 'unsold'
 export type AuctionStatus = 'idle' | 'running' | 'sold' | 'unsold'
+export type UserRole = 'admin' | 'verifier'
+
+export interface LoginCredentials {
+  username: string
+  password: string
+}
+
+export interface LoginResponse {
+  access_token: string
+  token_type: 'bearer'
+  role: UserRole
+  expires_at: string
+}
 
 export interface PlayerCreate {
   roll_number: string
@@ -42,6 +55,8 @@ export interface Player {
   created_at: string
 }
 
+export type PublicPlayer = Omit<Player, 'mobile'>
+
 export interface TeamCreate {
   name: string
   captain_name: string
@@ -58,7 +73,7 @@ export interface Team {
   coordinator_name: string
   coordinator_photo_url: string
   purse: number
-  players: Player[]
+  players: PublicPlayer[]
 }
 
 export interface AuctionState {

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 
 const links = [
   { label: 'Player Register', to: '/register' },
@@ -16,6 +17,7 @@ interface NavbarProps {
 export function Navbar({ onAdminLogin }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [collegeLogoUnavailable, setCollegeLogoUnavailable] = useState(false)
+  const { role } = useAuth()
 
   const closeMenu = () => setMenuOpen(false)
   const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -45,13 +47,19 @@ export function Navbar({ onAdminLogin }: NavbarProps) {
           ))}
         </nav>
 
-        <button
-          type="button"
-          onClick={onAdminLogin}
-          className="hidden shrink-0 rounded-full border border-cyan-300/60 bg-cyan-300/10 px-5 py-2.5 text-sm font-bold text-cyan-100 shadow-[0_0_24px_rgba(34,211,238,.12)] transition hover:border-cyan-200 hover:bg-cyan-300/20 xl:inline-flex"
-        >
-          Admin Login
-        </button>
+        {role ? (
+          <span className="hidden shrink-0 rounded-full border border-emerald-300/30 bg-emerald-300/[.08] px-4 py-2 text-xs font-bold uppercase tracking-[.12em] text-emerald-100 xl:inline-flex">
+            {role === 'admin' ? 'Admin session' : 'Verifier session'}
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={onAdminLogin}
+            className="hidden shrink-0 rounded-full border border-cyan-300/60 bg-cyan-300/10 px-5 py-2.5 text-sm font-bold text-cyan-100 shadow-[0_0_24px_rgba(34,211,238,.12)] transition hover:border-cyan-200 hover:bg-cyan-300/20 xl:inline-flex"
+          >
+            Admin Login
+          </button>
+        )}
 
         <button
           type="button"
@@ -77,13 +85,19 @@ export function Navbar({ onAdminLogin }: NavbarProps) {
                 {link.label}
               </NavLink>
             ))}
-            <button
-              type="button"
-              onClick={() => { closeMenu(); onAdminLogin() }}
-              className="col-span-2 rounded-xl border border-cyan-300/50 bg-cyan-300/10 px-3 py-3 text-sm font-bold text-cyan-100 sm:col-span-1"
-            >
-              Admin Login
-            </button>
+            {role ? (
+              <span className="col-span-2 rounded-xl border border-emerald-300/25 bg-emerald-300/[.06] px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-emerald-100 sm:col-span-1">
+                {role === 'admin' ? 'Admin session' : 'Verifier session'}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { closeMenu(); onAdminLogin() }}
+                className="col-span-2 rounded-xl border border-cyan-300/50 bg-cyan-300/10 px-3 py-3 text-sm font-bold text-cyan-100 sm:col-span-1"
+              >
+                Admin Login
+              </button>
+            )}
           </div>
         </nav>
       )}

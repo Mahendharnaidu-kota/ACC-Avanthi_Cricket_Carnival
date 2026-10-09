@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.constants import MAX_TEAMS, team_limit_reached
 from app.database import get_db
-from app.dependencies import require_admin
+from app.dependencies import AuthPrincipal, get_current_admin
 from app.models import AuctionState, Player, Team
 from app.schemas.team import TeamCreate, TeamRead, TeamUpdate
 
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/teams", tags=["teams"])
 def create_team(
     payload: TeamCreate,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin),
+    _: AuthPrincipal = Depends(get_current_admin),
 ) -> Team:
     count = db.scalar(select(func.count()).select_from(Team)) or 0
     if team_limit_reached(count):
@@ -44,7 +44,7 @@ def update_team(
     id: int,
     payload: TeamUpdate,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin),
+    _: AuthPrincipal = Depends(get_current_admin),
 ) -> Team:
     team = db.get(Team, id)
     if team is None:
@@ -65,7 +65,7 @@ def update_team(
 def delete_team(
     id: int,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin),
+    _: AuthPrincipal = Depends(get_current_admin),
 ) -> None:
     team = db.get(Team, id)
     if team is None:

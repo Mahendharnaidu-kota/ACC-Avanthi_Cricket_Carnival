@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
-from app.schemas.player import PlayerRead
+from app.schemas.player import PublicPlayerRead
 
 
 class TeamCreate(BaseModel):
@@ -25,4 +25,4 @@ class TeamRead(BaseModel):
     coordinator_name: str
     coordinator_photo_url: str
     purse: int
-    players: list[PlayerRead]
+    players: list[PublicPlayerRead]

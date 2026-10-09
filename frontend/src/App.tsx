@@ -1,7 +1,12 @@
-import { useState } from 'react'
-import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { createBrowserRouter, Outlet, RouterProvider, useLocation, useNavigate } from 'react-router-dom'
+import { AuthProvider } from './auth/AuthContext'
+import { ProtectedRoute } from './auth/ProtectedRoute'
 import { AdminLoginModal } from './components/AdminLoginModal'
 import { Navbar } from './components/Navbar'
+import { AdminDashboard } from './pages/AdminDashboard'
+import { BudgetVerifierLogin } from './pages/BudgetVerifierLogin'
+import { BudgetPage } from './pages/BudgetPage'
 import { HomePage } from './pages/HomePage'
 import { RegisterPage } from './pages/RegisterPage'
 
@@ -19,6 +24,16 @@ function PagePlaceholder({ title }: { title: string }) {
 
 function AppLayout() {
   const [loginOpen, setLoginOpen] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const routeState = location.state as { openAdminLogin?: boolean } | null
+    if (routeState?.openAdminLogin) {
+      setLoginOpen(true)
+      navigate(location.pathname, { replace: true, state: null })
+    }
+  }, [location.pathname, location.state, navigate])
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#050b13] text-white">
@@ -35,19 +50,19 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/register', element: <RegisterPage /> },
-      { path: '/budget', element: <PagePlaceholder title="Budget Verifier" /> },
+      { path: '/budget', element: <ProtectedRoute allowedRoles={['admin', 'verifier']} unauthenticatedFallback={<BudgetVerifierLogin />}><BudgetPage /></ProtectedRoute> },
       { path: '/players', element: <PagePlaceholder title="View Players" /> },
       { path: '/teams', element: <PagePlaceholder title="View Team" /> },
       { path: '/live', element: <PagePlaceholder title="Watch Live" /> },
-      { path: '/admin', element: <PagePlaceholder title="Admin Dashboard" /> },
-      { path: '/admin/teams', element: <PagePlaceholder title="Assign Teams" /> },
-      { path: '/admin/players', element: <PagePlaceholder title="Manage Players" /> },
-      { path: '/admin/auction', element: <PagePlaceholder title="Start Auction" /> },
+      { path: '/admin', element: <ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute> },
+      { path: '/admin/teams', element: <ProtectedRoute allowedRoles={['admin']}><PagePlaceholder title="Assign Teams" /></ProtectedRoute> },
+      { path: '/admin/players', element: <ProtectedRoute allowedRoles={['admin']}><PagePlaceholder title="Manage Players" /></ProtectedRoute> },
+      { path: '/admin/auction', element: <ProtectedRoute allowedRoles={['admin']}><PagePlaceholder title="Start Auction" /></ProtectedRoute> },
       { path: '*', element: <PagePlaceholder title="Page not found" /> },
     ],
   },
 ])
 
 export default function App() {
-  return <RouterProvider router={router} />
+  return <AuthProvider><RouterProvider router={router} /></AuthProvider>
 }

@@ -4,10 +4,15 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import require_admin
+from app.dependencies import (
+    AuthPrincipal,
+    get_current_admin,
+    get_current_verifier_or_admin,
+    get_optional_current_principal,
+)
 from app.models import Player
 from app.schemas.enums import Course, PaymentStatus
-from app.schemas.player import BasePriceUpdate, PaymentUpdate, PlayerCreate, PlayerRead
+from app.schemas.player import BasePriceUpdate, PaymentUpdate, PlayerCreate, PlayerRead, PublicPlayerRead
 
 router = APIRouter(prefix="/players", tags=["players"])
 
@@ -25,7 +30,7 @@ def register_player(payload: PlayerCreate, db: Session = Depends(get_db)) -> Pla
     return player
 
 
-@router.get("", response_model=list[PlayerRead])
+@router.get("", response_model=list[PlayerRead | PublicPlayerRead])
 def list_players(
     payment_status: PaymentStatus | None = None,
     course: Course | None = None,
@@ -33,9 +38,12 @@ def list_players(
     branch: str | None = None,
     search: str | None = None,
     db: Session = Depends(get_db),
-) -> list[Player]:
+    principal: AuthPrincipal | None = Depends(get_optional_current_principal),
+) -> list[PlayerRead | PublicPlayerRead]:
     statement = select(Player)
-    if payment_status is not None:
+    if principal is None:
+        statement = statement.where(Player.payment_status == PaymentStatus.PAID.value)
+    elif payment_status is not None:
         statement = statement.where(Player.payment_status == payment_status.value)
     if course is not None:
         statement = statement.where(Player.course == course.value)
@@ -46,7 +54,10 @@ def list_players(
     if search:
         pattern = f"%{search.strip()}%"
         statement = statement.where(Player.name.ilike(pattern) | Player.roll_number.ilike(pattern))
-    return list(db.scalars(statement.order_by(Player.name.asc(), Player.id.asc())).all())
+    players = list(db.scalars(statement.order_by(Player.name.asc(), Player.id.asc())).all())
+    if principal is None:
+        return [PublicPlayerRead.model_validate(player) for player in players]
+    return players
 
 
 @router.patch("/{id}/payment", response_model=PlayerRead)
@@ -54,7 +65,7 @@ def update_payment(
     id: int,
     payload: PaymentUpdate,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin),
+    _: AuthPrincipal = Depends(get_current_verifier_or_admin),
 ) -> Player:
     player = db.get(Player, id)
     if player is None:
@@ -70,7 +81,7 @@ def update_base_price(
     id: int,
     payload: BasePriceUpdate,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin),
+    _: AuthPrincipal = Depends(get_current_admin),
 ) -> Player:
     player = db.get(Player, id)
     if player is None:
@@ -87,7 +98,7 @@ def update_base_price(
 def delete_player(
     id: int,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin),
+    _: AuthPrincipal = Depends(get_current_admin),
 ) -> None:
     player = db.get(Player, id)
     if player is None:

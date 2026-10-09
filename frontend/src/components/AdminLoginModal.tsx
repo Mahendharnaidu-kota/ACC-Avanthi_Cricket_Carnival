@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { getSignInError, useAuth } from '../auth/AuthContext'
 
 interface AdminLoginModalProps {
   open: boolean
@@ -6,7 +8,12 @@ interface AdminLoginModalProps {
 }
 
 export function AdminLoginModal({ open, onClose }: AdminLoginModalProps) {
-  const [notice, setNotice] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const { authenticate } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!open) return
@@ -17,11 +24,30 @@ export function AdminLoginModal({ open, onClose }: AdminLoginModalProps) {
     return () => window.removeEventListener('keydown', closeOnEscape)
   }, [open, onClose])
 
+  useEffect(() => {
+    if (!open) {
+      setError('')
+      setPassword('')
+    }
+  }, [open])
+
   if (!open) return null
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setNotice('Admin sign-in will be connected in Step 6.')
+    setError('')
+    setSubmitting(true)
+    try {
+      await authenticate('admin', { username, password })
+      setUsername('')
+      setPassword('')
+      onClose()
+      navigate('/admin', { replace: true })
+    } catch (loginError) {
+      setError(getSignInError(loginError))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -37,14 +63,14 @@ export function AdminLoginModal({ open, onClose }: AdminLoginModalProps) {
         <form onSubmit={handleSubmit} className="mt-7 space-y-4">
           <label className="block text-sm font-semibold text-slate-200">
             Username
-            <input autoFocus name="username" autoComplete="username" required className="mt-2 w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/70 focus:ring-2 focus:ring-cyan-300/15" placeholder="Admin username" />
+            <input autoFocus name="username" autoComplete="username" required value={username} onChange={(event) => { setUsername(event.target.value); setError('') }} className="mt-2 w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/70 focus:ring-2 focus:ring-cyan-300/15" placeholder="Admin username" />
           </label>
           <label className="block text-sm font-semibold text-slate-200">
             Password
-            <input name="password" type="password" autoComplete="current-password" required className="mt-2 w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/70 focus:ring-2 focus:ring-cyan-300/15" placeholder="Password" />
+            <input name="password" type="password" autoComplete="current-password" required value={password} onChange={(event) => { setPassword(event.target.value); setError('') }} className="mt-2 w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/70 focus:ring-2 focus:ring-cyan-300/15" placeholder="Password" />
           </label>
-          <button type="submit" className="w-full rounded-xl bg-cyan-300 px-4 py-3 font-extrabold text-slate-950 transition hover:bg-cyan-200">Login</button>
-          {notice && <p role="status" className="text-sm text-cyan-200">{notice}</p>}
+          <button type="submit" disabled={submitting} className="w-full rounded-xl bg-cyan-300 px-4 py-3 font-extrabold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-wait disabled:opacity-60">{submitting ? 'Signing in…' : 'Login'}</button>
+          {error && <p role="alert" className="rounded-lg border border-rose-300/20 bg-rose-300/[.07] px-3 py-2 text-sm text-rose-200">{error}</p>}
         </form>
       </section>
     </div>

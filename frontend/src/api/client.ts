@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Player, PlayerCreate, PlayerFilters, Team, TeamCreate } from './types'
+import type { LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, Team, TeamCreate, UserRole } from './types'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api'
 
@@ -8,6 +8,40 @@ export const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = window.localStorage.getItem('acc_access_token')
+    if (token) config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: unknown) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401 && typeof window !== 'undefined') {
+      window.localStorage.removeItem('acc_access_token')
+      window.localStorage.removeItem('acc_user_role')
+      window.dispatchEvent(new Event('acc:auth-expired'))
+    }
+    return Promise.reject(error)
+  },
+)
+
+export const authApi = {
+  loginAdmin: async (credentials: LoginCredentials): Promise<LoginResponse> => {
+    const response = await apiClient.post<LoginResponse>('/admin/login', credentials)
+    return response.data
+  },
+  loginVerifier: async (credentials: LoginCredentials): Promise<LoginResponse> => {
+    const response = await apiClient.post<LoginResponse>('/verifier/login', credentials)
+    return response.data
+  },
+  login: async (role: UserRole, credentials: LoginCredentials): Promise<LoginResponse> => {
+    return role === 'admin' ? authApi.loginAdmin(credentials) : authApi.loginVerifier(credentials)
+  },
+}
+
 export const playersApi = {
   list: async (filters: PlayerFilters = {}): Promise<Player[]> => {
     const response = await apiClient.get<Player[]>('/players', { params: filters })
@@ -15,6 +49,12 @@ export const playersApi = {
   },
   register: async (payload: PlayerCreate): Promise<Player> => {
     const response = await apiClient.post<Player>('/players', payload)
+    return response.data
+  },
+  updatePayment: async (playerId: number, paymentStatus: PaymentStatus): Promise<Player> => {
+    const response = await apiClient.patch<Player>(`/players/${playerId}/payment`, {
+      payment_status: paymentStatus,
+    })
     return response.data
   },
 }

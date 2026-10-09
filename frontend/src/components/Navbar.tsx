@@ -17,7 +17,7 @@ interface NavbarProps {
 export function Navbar({ onAdminLogin }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [collegeLogoUnavailable, setCollegeLogoUnavailable] = useState(false)
-  const { role } = useAuth()
+  const { role, logout } = useAuth()
 
   const closeMenu = () => setMenuOpen(false)
   const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -47,10 +47,13 @@ export function Navbar({ onAdminLogin }: NavbarProps) {
           ))}
         </nav>
 
-        {role ? (
-          <span className="hidden shrink-0 rounded-full border border-emerald-300/30 bg-emerald-300/[.08] px-4 py-2 text-xs font-bold uppercase tracking-[.12em] text-emerald-100 xl:inline-flex">
-            {role === 'admin' ? 'Admin session' : 'Verifier session'}
-          </span>
+        {role === 'admin' ? (
+          <div className="hidden shrink-0 items-center gap-2 xl:flex">
+            <NavLink to="/admin" className={linkClass}>Admin Dashboard</NavLink>
+            <button type="button" onClick={logout} className="rounded-full border border-rose-200/25 bg-rose-300/[.06] px-4 py-2 text-sm font-bold text-rose-100 transition hover:border-rose-200/50 hover:bg-rose-300/10">Logout</button>
+          </div>
+        ) : role === 'verifier' ? (
+          <button type="button" onClick={logout} className="hidden shrink-0 rounded-full border border-rose-200/25 bg-rose-300/[.06] px-4 py-2 text-sm font-bold text-rose-100 transition hover:border-rose-200/50 hover:bg-rose-300/10 xl:inline-flex">Logout</button>
         ) : (
           <button
             type="button"
@@ -85,10 +88,13 @@ export function Navbar({ onAdminLogin }: NavbarProps) {
                 {link.label}
               </NavLink>
             ))}
-            {role ? (
-              <span className="col-span-2 rounded-xl border border-emerald-300/25 bg-emerald-300/[.06] px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-emerald-100 sm:col-span-1">
-                {role === 'admin' ? 'Admin session' : 'Verifier session'}
-              </span>
+            {role === 'admin' ? (
+              <>
+                <NavLink to="/admin" onClick={closeMenu} className={({ isActive }) => `rounded-xl border px-3 py-3 text-center text-sm font-semibold transition ${isActive ? 'border-cyan-300/50 bg-cyan-300/10 text-cyan-100' : 'border-white/10 bg-white/[.03] text-slate-300 hover:bg-white/[.08]'}`}>Admin Dashboard</NavLink>
+                <button type="button" onClick={() => { closeMenu(); logout() }} className="rounded-xl border border-rose-200/25 bg-rose-300/[.05] px-3 py-3 text-sm font-bold text-rose-100 transition hover:bg-rose-300/10">Logout</button>
+              </>
+            ) : role === 'verifier' ? (
+              <button type="button" onClick={() => { closeMenu(); logout() }} className="col-span-2 rounded-xl border border-rose-200/25 bg-rose-300/[.05] px-3 py-3 text-sm font-bold text-rose-100 transition hover:bg-rose-300/10 sm:col-span-1">Logout</button>
             ) : (
               <button
                 type="button"

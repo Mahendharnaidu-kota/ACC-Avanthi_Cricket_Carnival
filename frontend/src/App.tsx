@@ -34,6 +34,22 @@ function AppLayout() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    const isPrivateRoute = location.pathname === '/budget'
+      || location.pathname === '/admin'
+      || location.pathname.startsWith('/admin/')
+    const existingRobotsMeta = document.querySelector('meta[name="robots"]')
+
+    if (isPrivateRoute) {
+      const robotsMeta = existingRobotsMeta ?? document.createElement('meta')
+      robotsMeta.setAttribute('name', 'robots')
+      robotsMeta.setAttribute('content', 'noindex')
+      if (!existingRobotsMeta) document.head.appendChild(robotsMeta)
+    } else if (existingRobotsMeta?.getAttribute('content') === 'noindex') {
+      existingRobotsMeta.remove()
+    }
+  }, [location.pathname])
+
+  useEffect(() => {
     const routeState = location.state as { openAdminLogin?: boolean } | null
     if (routeState?.openAdminLogin) {
       setLoginOpen(true)

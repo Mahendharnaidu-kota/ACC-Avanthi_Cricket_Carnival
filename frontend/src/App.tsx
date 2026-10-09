@@ -8,6 +8,7 @@ import { AdminDashboard } from './pages/AdminDashboard'
 import { BudgetVerifierLogin } from './pages/BudgetVerifierLogin'
 import { BudgetPage } from './pages/BudgetPage'
 import { AdminTeamsPage } from './pages/AdminTeamsPage'
+import { AdminPlayersPage } from './pages/AdminPlayersPage'
 import { HomePage } from './pages/HomePage'
 import { PlayersPage } from './pages/PlayersPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
       { path: '/live', element: <PagePlaceholder title="Watch Live" /> },
       { path: '/admin', element: <ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute> },
       { path: '/admin/teams', element: <ProtectedRoute allowedRoles={['admin']}><AdminTeamsPage /></ProtectedRoute> },
-      { path: '/admin/players', element: <ProtectedRoute allowedRoles={['admin']}><PagePlaceholder title="Manage Players" /></ProtectedRoute> },
+      { path: '/admin/players', element: <ProtectedRoute allowedRoles={['admin']}><AdminPlayersPage /></ProtectedRoute> },
       { path: '/admin/auction', element: <ProtectedRoute allowedRoles={['admin']}><PagePlaceholder title="Start Auction" /></ProtectedRoute> },
       { path: '*', element: <PagePlaceholder title="Page not found" /> },
     ],

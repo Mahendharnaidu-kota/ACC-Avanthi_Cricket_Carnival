@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, Team, TeamCreate, TeamUpdate, UserRole } from './types'
+import type { BasePrice, BasePriceUpdate, LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, Team, TeamCreate, TeamUpdate, UserRole } from './types'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api'
 
@@ -56,6 +56,14 @@ export const playersApi = {
       payment_status: paymentStatus,
     })
     return response.data
+  },
+  updateBasePrice: async (playerId: number, basePrice: BasePrice): Promise<Player> => {
+    const payload: BasePriceUpdate = { base_price: basePrice }
+    const response = await apiClient.patch<Player>(`/players/${playerId}/base-price`, payload)
+    return response.data
+  },
+  remove: async (playerId: number): Promise<void> => {
+    await apiClient.delete(`/players/${playerId}`)
   },
 }
 

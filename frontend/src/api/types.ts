@@ -1,6 +1,7 @@
 export type Course = 'BTech' | 'Diploma' | 'MBA' | 'MCA' | 'MTech'
 export type SkillType = 'batting' | 'bowling' | 'allrounder'
 export type PaymentStatus = 'paid' | 'not_paid'
+export type BasePrice = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100 | 120 | 140 | 160 | 180 | 200 | 230 | 250
 export type PlayerAuctionStatus = 'available' | 'sold' | 'passed' | 'unsold'
 export type AuctionStatus = 'idle' | 'running' | 'sold' | 'unsold'
 export type UserRole = 'admin' | 'verifier'
@@ -96,4 +97,8 @@ export interface PlayerFilters {
   year?: number
   branch?: string
   search?: string
+}
+
+export interface BasePriceUpdate {
+  base_price: BasePrice
 }

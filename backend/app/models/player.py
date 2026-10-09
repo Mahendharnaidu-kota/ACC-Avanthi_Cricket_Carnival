@@ -56,6 +56,7 @@ class Player(Base):
         ForeignKey("teams.id", ondelete="SET NULL"), nullable=True
     )
     sold_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    sold_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

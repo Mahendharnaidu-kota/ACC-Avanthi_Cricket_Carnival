@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal, get_db
@@ -7,6 +7,7 @@ from app.schemas.auction import (
     AuctionPublicState,
     AuctionTeamSummary,
     BidRequest,
+    RecentSale,
     SelectCategoryRequest,
 )
 from app.services.auction_engine import (
@@ -15,6 +16,7 @@ from app.services.auction_engine import (
     pass_current_player,
     place_bid,
     public_state,
+    recent_sales,
     select_category,
     start_auction,
     team_summaries,
@@ -104,6 +106,14 @@ async def state_endpoint(db: Session = Depends(get_db)) -> AuctionPublicState:
 @router.get("/teams", response_model=list[AuctionTeamSummary])
 def auction_teams_endpoint(db: Session = Depends(get_db)) -> list[dict[str, object]]:
     return team_summaries(db)
+
+
+@router.get("/recent-sales", response_model=list[RecentSale])
+def recent_sales_endpoint(
+    limit: int = Query(default=10, ge=1, le=20),
+    db: Session = Depends(get_db),
+) -> list[dict[str, object]]:
+    return recent_sales(db, limit)
 
 
 @websocket_router.websocket("/ws/auction")

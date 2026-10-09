@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useEffect, useRef, useState } from 'react'
-import { auctionApi, getAuctionWebSocketUrl } from '../api/client'
+import { auctionApi, getAuctionWebSocketUrl, publicAuctionApi } from '../api/client'
 import type { AuctionPublicState } from '../api/types'
 
 export type AuctionConnectionStatus = 'live' | 'reconnecting'
@@ -14,7 +14,8 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Auction state could not be loaded.'
 }
 
-export function useAuctionState() {
+export function useAuctionState(options: { publicOnly?: boolean } = {}) {
+  const { publicOnly = false } = options
   const [state, setState] = useState<AuctionPublicState | null>(null)
   const [connectionStatus, setConnectionStatus] = useState<AuctionConnectionStatus>('reconnecting')
   const [loading, setLoading] = useState(true)
@@ -42,7 +43,7 @@ export function useAuctionState() {
       if (!active || polling || socket?.readyState === WebSocket.OPEN) return
       polling = true
       try {
-        applyState(await auctionApi.state())
+        applyState(await (publicOnly ? publicAuctionApi.state() : auctionApi.state()))
       } catch (reason: unknown) {
         if (active) {
           setLoading(false)
@@ -118,7 +119,7 @@ export function useAuctionState() {
       window.clearInterval(tickTimer)
       socket?.close()
     }
-  }, [])
+  }, [publicOnly])
 
   let countdownSeconds = 0
   if (state?.status === 'running') {

@@ -1,9 +1,14 @@
 import axios from 'axios'
-import type { AuctionCategory, AuctionPublicState, AuctionTeamSummary, BasePrice, BasePriceUpdate, BidRequest, LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, Team, TeamCreate, TeamUpdate, UserRole } from './types'
+import type { AuctionCategory, AuctionPublicState, AuctionTeamSummary, BasePrice, BasePriceUpdate, BidRequest, LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, RecentSale, Team, TeamCreate, TeamUpdate, UserRole } from './types'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api'
 
 export const apiClient = axios.create({
+  baseURL: apiBaseUrl.replace(/\/$/, ''),
+  headers: { 'Content-Type': 'application/json' },
+})
+
+const publicAuctionClient = axios.create({
   baseURL: apiBaseUrl.replace(/\/$/, ''),
   headers: { 'Content-Type': 'application/json' },
 })
@@ -78,6 +83,21 @@ export const auctionApi = {
   },
   pass: async (): Promise<AuctionPublicState> => {
     const response = await apiClient.post<AuctionPublicState>('/auction/pass')
+    return response.data
+  },
+}
+
+export const publicAuctionApi = {
+  state: async (): Promise<AuctionPublicState> => {
+    const response = await publicAuctionClient.get<AuctionPublicState>('/auction/state')
+    return response.data
+  },
+  teams: async (): Promise<AuctionTeamSummary[]> => {
+    const response = await publicAuctionClient.get<AuctionTeamSummary[]>('/auction/teams')
+    return response.data
+  },
+  recentSales: async (limit = 10): Promise<RecentSale[]> => {
+    const response = await publicAuctionClient.get<RecentSale[]>('/auction/recent-sales', { params: { limit } })
     return response.data
   },
 }

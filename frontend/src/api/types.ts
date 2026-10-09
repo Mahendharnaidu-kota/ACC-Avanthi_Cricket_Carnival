@@ -142,6 +142,15 @@ export interface AuctionTeamSummary {
   categories: Record<AuctionRosterCategory, AuctionCategoryStatus>
 }
 
+export interface RecentSale {
+  player_name: string
+  course: Course
+  year: number
+  team_name: string
+  sold_price: number
+  sold_at: string | null
+}
+
 export interface PlayerFilters {
   payment_status?: PaymentStatus
   course?: Course

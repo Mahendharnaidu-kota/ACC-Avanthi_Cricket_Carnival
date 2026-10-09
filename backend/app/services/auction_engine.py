@@ -81,6 +81,8 @@ def _finalize_locked_state(db: Session, state: AuctionState, now: datetime) -> b
         player.auction_status = "sold"
         player.sold_to_team_id = team.id
         player.sold_price = state.current_price
+        if player.sold_at is None:
+            player.sold_at = now
         team.purse -= state.current_price
         state.status = "sold"
         state.message = f"SOLD to {team.name} for {state.current_price}"
@@ -269,3 +271,28 @@ def team_summaries(db: Session) -> list[dict[str, object]]:
             "categories": get_team_status(bought_players),
         })
     return summaries
+
+
+def recent_sales(db: Session, limit: int = 10) -> list[dict[str, object]]:
+    statement = (
+        select(Player.name, Player.course, Player.year, Team.name, Player.sold_price, Player.sold_at)
+        .join(Team, Team.id == Player.sold_to_team_id)
+        .where(
+            Player.auction_status == "sold",
+            Player.sold_to_team_id.is_not(None),
+            Player.sold_price.is_not(None),
+        )
+        .order_by(Player.sold_at.desc().nullslast(), Player.id.desc())
+        .limit(limit)
+    )
+    return [
+        {
+            "player_name": row[0],
+            "course": row[1],
+            "year": row[2],
+            "team_name": row[3],
+            "sold_price": row[4],
+            "sold_at": row[5],
+        }
+        for row in db.execute(statement)
+    ]

@@ -64,3 +64,12 @@ class AuctionTeamSummary(BaseModel):
     total_players: int
     max_players: int
     categories: dict[str, AuctionCategoryStatus]
+
+
+class RecentSale(BaseModel):
+    player_name: str
+    course: str
+    year: int
+    team_name: str
+    sold_price: int
+    sold_at: datetime | None

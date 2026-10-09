@@ -14,6 +14,7 @@ import { HomePage } from './pages/HomePage'
 import { PlayersPage } from './pages/PlayersPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { TeamsPage } from './pages/TeamsPage'
+import { LivePage } from './pages/LivePage'
 
 function PagePlaceholder({ title }: { title: string }) {
   return (
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
       { path: '/budget', element: <ProtectedRoute allowedRoles={['admin', 'verifier']} unauthenticatedFallback={<BudgetVerifierLogin />}><BudgetPage /></ProtectedRoute> },
       { path: '/players', element: <PlayersPage /> },
       { path: '/teams', element: <TeamsPage /> },
-      { path: '/live', element: <PagePlaceholder title="Watch Live" /> },
+      { path: '/live', element: <LivePage /> },
       { path: '/admin', element: <ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute> },
       { path: '/admin/teams', element: <ProtectedRoute allowedRoles={['admin']}><AdminTeamsPage /></ProtectedRoute> },
       { path: '/admin/players', element: <ProtectedRoute allowedRoles={['admin']}><AdminPlayersPage /></ProtectedRoute> },

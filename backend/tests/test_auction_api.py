@@ -9,6 +9,8 @@ from sqlalchemy.pool import StaticPool
 from app.database import Base, get_db
 from app.main import app
 from app.models import AuctionState, Player, Team
+from app.routers import auction as auction_router
+from app.services import auction_live
 from app.services.auction_engine import finalize_expired_auction
 
 TEST_ADMIN_USERNAME = "auction-test-admin"
@@ -32,6 +34,8 @@ def auction_env(monkeypatch: pytest.MonkeyPatch):
     )
     TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
     Base.metadata.create_all(bind=engine)
+    monkeypatch.setattr(auction_live, "SessionLocal", TestingSessionLocal)
+    monkeypatch.setattr(auction_router, "SessionLocal", TestingSessionLocal)
 
     def override_get_db():
         db = TestingSessionLocal()
@@ -225,9 +229,14 @@ def test_sale_finalizes_once_and_deducts_purse_once(auction_env):
         assert player.auction_status == "sold"
         assert player.sold_to_team_id == team_id
         assert player.sold_price == 50
+        first_sold_at = player.sold_at
+        assert first_sold_at is not None
         assert team.purse == 950
         assert state.status == "sold"
         assert state.message == f"SOLD to {team.name} for 50"
+        assert finalize_expired_auction(db) is False
+        db.refresh(player)
+        assert player.sold_at == first_sold_at
 
 
 def test_expired_no_bid_marks_player_unsold(auction_env):
@@ -319,4 +328,40 @@ def test_public_auction_teams_include_roster_status(auction_env):
     assert team["total_players"] == 1
     assert team["max_players"] == 15
     assert team["categories"]["BTech 1st"] == {"count": 1, "requirement_met": False}
+
+
+def test_recent_sales_is_public_ordered_limited_and_private_fields_are_excluded(auction_env):
+    client, session_factory = auction_env
+    team_id = add_team(session_factory, name="Recent Sales Team")
+    older_id = add_player(session_factory, name="Older Sale", course="MCA", year=1, auction_status="sold")
+    newer_id = add_player(session_factory, name="Newer Sale", course="BTech", year=2, auction_status="sold")
+    oldest_id = add_player(session_factory, name="Oldest Sale", course="Diploma", year=1, auction_status="sold")
+    legacy_id = add_player(session_factory, name="Legacy Sale", course="MBA", year=1, auction_status="sold")
+    now = datetime.now(UTC)
+    with session_factory() as db:
+        for player_id, sold_at, price in (
+            (older_id, now - timedelta(hours=1), 60),
+            (newer_id, now, 80),
+            (oldest_id, now - timedelta(days=1), 40),
+            (legacy_id, None, 30),
+        ):
+            player = db.get(Player, player_id)
+            player.sold_to_team_id = team_id
+            player.sold_at = sold_at
+            player.sold_price = price
+        db.commit()
+
+    response = client.get("/api/auction/recent-sales?limit=2")
+    assert response.status_code == 200
+    sales = response.json()
+    assert [sale["player_name"] for sale in sales] == ["Newer Sale", "Older Sale"]
+    assert all(set(sale) == {"player_name", "course", "year", "team_name", "sold_price", "sold_at"} for sale in sales)
+    assert all("mobile" not in sale for sale in sales)
+    assert all(sale["team_name"].startswith("Recent Sales Team") for sale in sales)
+
+    all_sales = client.get("/api/auction/recent-sales")
+    assert all_sales.status_code == 200
+    assert [sale["player_name"] for sale in all_sales.json()] == [
+        "Newer Sale", "Older Sale", "Oldest Sale", "Legacy Sale"
+    ]
 

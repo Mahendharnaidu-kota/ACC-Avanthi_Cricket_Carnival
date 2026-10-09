@@ -1,7 +1,9 @@
 import axios from 'axios'
 import type { AuctionCategory, AuctionPublicState, AuctionTeamSummary, BasePrice, BasePriceUpdate, BidRequest, LoginCredentials, LoginResponse, PaymentStatus, Player, PlayerCreate, PlayerFilters, RecentSale, Team, TeamCreate, TeamUpdate, UserRole } from './types'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api'
+const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
+const apiOrigin = configuredApiBaseUrl.replace(/\/+$/, '').replace(/\/api$/, '')
+const apiBaseUrl = `${apiOrigin}/api`
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl.replace(/\/$/, ''),
@@ -48,9 +50,8 @@ export const authApi = {
 }
 
 export function getAuctionWebSocketUrl(): string {
-  const apiUrl = new URL(apiBaseUrl, window.location.origin)
-  const apiRootPath = apiUrl.pathname.replace(/\/api\/?$/, '').replace(/\/$/, '')
-  const websocketUrl = new URL(`${apiRootPath}/ws/auction`, apiUrl.origin)
+  const apiUrl = new URL(apiOrigin, window.location.origin)
+  const websocketUrl = new URL('/ws/auction', apiUrl.origin)
   websocketUrl.protocol = websocketUrl.protocol === 'https:' ? 'wss:' : 'ws:'
   return websocketUrl.toString()
 }
